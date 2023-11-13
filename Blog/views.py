@@ -138,6 +138,7 @@ class CommentDetail(APIView):
         ],
         request_body=CommentSerializer,
         responses={200: 'Updated', 400: 'Bad Request'}
+
     )
 
     def put(self, request, pk, format=None):
