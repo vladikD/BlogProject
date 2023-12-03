@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Post, Comment
 from .serializer import PostSerializer, CommentSerializer
@@ -10,13 +11,14 @@ from rest_framework import status
 from drf_yasg import openapi
 
 class PostList(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(
         operation_description="Get a list of posts",
         responses={200: openapi.Response('List of posts', PostSerializer(many=True))}
     )
     def get(self, request, format=None):
-        post =  Post.objects.all()
+        post = Post.objects.all()
         serializer = PostSerializer(post, many=True)
         return Response(serializer.data)
 
@@ -34,6 +36,7 @@ class PostList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostDetail(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_object(self, pk):
         try:
@@ -86,6 +89,7 @@ class PostDetail(APIView):
 
 
 class CommentList(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(
         operation_description="Get a list of comments",
@@ -111,6 +115,7 @@ class CommentList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetail(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_object(self, pk):
         try:
