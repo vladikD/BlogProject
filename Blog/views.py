@@ -1,14 +1,24 @@
-from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
 from .models import Post, Comment
 from .serializer import PostSerializer, CommentSerializer
 from django.http import Http404
 from rest_framework.views import APIView
+from drf_yasg import openapi
 from rest_framework.response import Response
 from rest_framework import status
-from drf_yasg import openapi
+from rest_framework.decorators import api_view
+from .serializer import UserRegistrationSerializer
+
+@api_view(['POST'])
+def register_user(request):
+    serializer = UserRegistrationSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostList(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -116,7 +126,6 @@ class CommentList(APIView):
 
 class CommentDetail(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
-
     def get_object(self, pk):
         try:
             return Comment.objects.get(pk=pk)
